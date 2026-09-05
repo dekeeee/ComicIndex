@@ -1,0 +1,24 @@
+# Supabase CLI 設定（最小構成）。
+# `supabase init` が生成する完全版に置き換えてよいが、下の [functions.*] セクションは残すこと。
+# Edge Functions は公開エンドポイント（認証は Turnstile + レート制限）なので verify_jwt = false。
+# trigger-build だけは関数内で service role の Bearer を検証する（内部専用）。
+
+project_id = "comicomi"
+
+[functions.post-review]
+verify_jwt = false
+
+[functions.vote-similar]
+verify_jwt = false
+
+[functions.report-review]
+verify_jwt = false
+
+[functions.search-works]
+verify_jwt = false
+
+[functions.register-work]
+verify_jwt = false
+
+[functions.trigger-build]
+verify_jwt = false
