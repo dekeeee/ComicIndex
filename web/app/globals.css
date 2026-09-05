@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #252a2b;
+  --muted: #636b6d;
+  --surface: #ffffff;
+  --border: #e4e7e5;
+  --accent: #be402f;
+  --accent-soft: #fcf0eb;
+  --surface-soft: #f6f8f7;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 16px;
+  line-height: 1.7;
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, system-ui, sans-serif;
+}
+
+.prose h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem; }
+.prose h2 { font-size: 1.15rem; font-weight: 700; margin: 1.5rem 0 0.5rem; }
+.prose p, .prose ul { margin: 0.5rem 0; line-height: 1.8; }
+.prose ul { padding-left: 1.25rem; list-style: disc; }
+.prose a { color: var(--accent); text-decoration: underline; }
+.prose strong { font-weight: 700; }
+
+/* Compact catalogue layout. */
+::selection { background: var(--accent-soft); color: var(--foreground); }
+button:not(:disabled), a { cursor: pointer; }
+:where(a, button, input, textarea, select):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+:where(input, textarea, select) { accent-color: var(--accent); }
+a:hover { text-decoration: underline; }
+button.bg-accent:hover:not(:disabled) { background: #a83425; }
+.section-title { font-size: 17px; font-weight: 700; border-bottom: 1px solid #bfc5c2; padding-bottom: 7px; }
+.search-shell { max-width: 680px; }
+.book-cover { aspect-ratio: 2/3; width: 100%; overflow: hidden; border: 1px solid var(--border); background: var(--surface-soft); }
+.cover-missing { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 10px; color: var(--muted); }
+.work-card { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.work-card-link { display: grid; grid-template-columns: 58px minmax(0, 1fr); align-items: start; gap: 12px; }
+.work-card-link:hover { text-decoration: none; }
+.work-card-link:hover p:first-child { text-decoration: underline; }
+.work-card > button { width: auto; align-self: flex-start; margin-left: 70px; min-height: 32px; border-radius: 3px; padding-left: 12px; padding-right: 12px; }
+.work-detail-header { padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.review-panel time { margin-left: auto; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
+}
