@@ -1,0 +1,30 @@
+# env
+.env
+.env.*
+!.env.example
+
+# node
+node_modules/
+web/.next/
+web/out/
+web/next-env.d.ts
+*.tsbuildinfo
+
+# python
+pipeline/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+pipeline/.cache/
+*.egg-info/
+
+# supabase
+supabase/.branches/
+supabase/.temp/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

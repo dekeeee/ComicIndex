@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "static-out",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8787", "--directory", "web/out"],
+      "port": 8787
+    },
+    {
+      "name": "next-dev-fixtures",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "web", "run", "dev:fixtures"],
+      "port": 3000
+    }
+  ]
+}
