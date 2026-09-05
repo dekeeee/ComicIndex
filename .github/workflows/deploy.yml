@@ -1,0 +1,102 @@
+name: pipeline-build-deploy
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 03:00 JST daily (18:00 UTC). Also keeps the Supabase free project from pausing.
+    - cron: "0 18 * * *"
+  repository_dispatch:
+    types: [content-updated]
+  workflow_dispatch:
+    inputs:
+      recompute_all:
+        description: "Recompute every embedding (slow)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  pipeline:
+    name: Refresh embeddings and similarity
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # Skip the batch on plain code pushes; content changes and the nightly run do the work.
+    if: github.event_name != 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/pyproject.toml
+      - name: Cache embedding model
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-multilingual-e5-small
+      - name: Install pipeline
+        working-directory: pipeline
+        run: |
+          pip install --index-url https://download.pytorch.org/whl/cpu torch
+          pip install -e .
+      - name: Recompute
+        working-directory: pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RAKUTEN_APP_ID: ${{ secrets.RAKUTEN_APP_ID }}
+          RAKUTEN_AFFILIATE_ID: ${{ secrets.RAKUTEN_AFFILIATE_ID }}
+        run: |
+          if [ "${{ github.event.inputs.recompute_all }}" = "true" ]; then
+            comicomi recompute --all
+          else
+            comicomi recompute
+          fi
+
+  build-deploy:
+    name: Build static site and deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [pipeline]
+    # Run even when the pipeline job was skipped (push), but not when it failed.
+    if: always() && (needs.pipeline.result == 'success' || needs.pipeline.result == 'skipped')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        working-directory: web
+        run: npm ci
+      - name: Sync shared rules
+        run: node scripts/sync-shared.mjs
+      - name: Lint, typecheck, test
+        working-directory: web
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test
+      - name: Build
+        working-directory: web
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
+          NEXT_PUBLIC_RAKUTEN_AFFILIATE_ID: ${{ secrets.RAKUTEN_AFFILIATE_ID }}
+          NEXT_PUBLIC_ADS_ENABLED: ${{ vars.ADS_ENABLED }}
+          NEXT_PUBLIC_ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT }}
+          NEXT_PUBLIC_AFFILIATE_BANNERS_ENABLED: ${{ vars.AFFILIATE_BANNERS_ENABLED }}
+        run: npm run build
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy web/out --project-name=comicomi --branch=main
