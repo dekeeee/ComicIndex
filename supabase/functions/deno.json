@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true
+  },
+  "tasks": {
+    "test": "deno test --allow-env",
+    "check": "deno check post-review/index.ts vote-similar/index.ts report-review/index.ts search-works/index.ts register-work/index.ts trigger-build/index.ts"
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "lineWidth": 90
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "review": { "bodyMin": 20, "bodyMax": 2000, "nicknameMax": 20, "ratingMin": 1, "ratingMax": 5, "defaultNickname": "名無し", "maxUrls": 2 },
+  "report": { "reasons": ["spam", "spoiler", "abuse", "copyright", "other"] },
+  "search": { "queryMin": 1, "queryMax": 100 }
+}
