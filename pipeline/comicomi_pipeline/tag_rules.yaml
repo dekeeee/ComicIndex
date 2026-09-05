@@ -1,0 +1,66 @@
+# comicomi tag rules (F-02). Read by tagger.py / adult_filter.py.
+#
+# genre_map:       Rakuten Books genre id prefix -> tag (weight 1.0). A work's
+#                  genre id matches when it STARTS WITH the key, so a key of
+#                  "001001001" also covers "001001001005".
+# adult_genre_ids: genre id prefixes treated as adult (is_adult = true).
+# adult_ng_words:  substrings (title / caption) treated as adult.
+# keyword_rules:   title / synopsis substrings -> tag (weight 0.6).
+#
+# tag categories: genre / theme / mood / setting
+
+genre_map:
+  # [TBD] Sub-genre ids below "001001" (コミック) are PLACEHOLDERS. Verify every id
+  # with the Rakuten GenreSearch API (BooksGenre/Search/20121128, booksGenreId=001001)
+  # before relying on them. Do not map the root "001001" itself: it would tag
+  # every comic with the same genre tag.
+  "001001001": { slug: shonen, name: 少年, category: genre }    # [TBD] verify id
+  "001001002": { slug: shojo, name: 少女, category: genre }     # [TBD] verify id
+  "001001003": { slug: seinen, name: 青年, category: genre }    # [TBD] verify id
+  "001001004": { slug: josei, name: 女性, category: genre }     # [TBD] verify id
+
+# [TBD] Fill with adult genre id prefixes once confirmed via GenreSearch
+# (e.g. the ボーイズラブ / ティーンズラブ / 成年コミック sub-genres if they exist under 001001).
+adult_genre_ids: []
+
+adult_ng_words:
+  - 成年コミック
+  - 成人向け
+  - 18禁
+  - R18
+  - アダルト
+
+keyword_rules:
+  # --- theme ---
+  - { match: [異世界], slug: isekai, name: 異世界, category: theme }
+  - { match: [転生, 転生した], slug: reincarnation, name: 転生, category: theme }
+  - { match: [恋愛, ラブストーリー, 恋する, 恋を], slug: romance, name: 恋愛, category: theme }
+  - { match: [ホラー, 恐怖, 怪談], slug: horror, name: ホラー, category: theme }
+  - { match: [ミステリー, 推理, 探偵, 事件の謎], slug: mystery, name: ミステリー, category: theme }
+  - { match: [料理, グルメ, 飯, レシピ, 食堂], slug: gourmet, name: 料理・グルメ, category: theme }
+  - { match: [音楽, バンド, ピアノ, ギター, 楽器], slug: music, name: 音楽, category: theme }
+  - { match: [歴史, 幕末, 戦国, 江戸時代, 平安], slug: history, name: 歴史, category: theme }
+  - { match: [戦争, 戦場, 戦火], slug: war, name: 戦争, category: theme }
+  - { match: [SF, 宇宙, ロボット, 未来世界, 近未来], slug: sf, name: SF, category: theme }
+  - { match: [ファンタジー, 魔王, 勇者, ドラゴン], slug: fantasy, name: ファンタジー, category: theme }
+  - { match: [日常, ほのぼの, 日々を], slug: slice-of-life, name: 日常, category: theme }
+  - { match: [ギャグ, コメディ, 爆笑, 笑える], slug: gag, name: ギャグ, category: theme }
+  - { match: [サスペンス, 陰謀, 復讐], slug: suspense, name: サスペンス, category: theme }
+  - { match: [医療, 医者, 病院, 外科医, 看護師], slug: medical, name: 医療, category: theme }
+  - { match: [お仕事, 職場, 会社員, サラリーマン, 新人社員], slug: work, name: 仕事, category: theme }
+  - { match: [冒険, 旅立つ, 冒険者], slug: adventure, name: 冒険, category: theme }
+  - { match: [バトル, 戦い, 最強, 決闘], slug: battle, name: バトル, category: theme }
+  - { match: [魔法, 魔術, 魔女, 魔導], slug: magic, name: 魔法, category: theme }
+  - { match: [青春, 高校生活, 思春期], slug: youth, name: 青春, category: theme }
+  - { match: [家族, 親子, 父と, 母と, 兄妹, 姉妹], slug: family, name: 家族, category: theme }
+  - { match: [動物, 猫, 犬, ペット], slug: animal, name: 動物, category: theme }
+  - { match: [旅, 旅行, 放浪, 世界を巡る], slug: travel, name: 旅, category: theme }
+  - { match: [スポーツ, 野球, サッカー, バスケ, テニス, バレーボール, 陸上], slug: sports, name: スポーツ, category: theme }
+  # --- setting ---
+  - { match: [学園, 学校, 高校, 中学], slug: school, name: 学園, category: setting }
+  - { match: [部活, 部員, 同好会], slug: club, name: 部活, category: setting }
+  # --- mood ---
+  - { match: [泣ける, 涙, 感動, 号泣], slug: tearjerker, name: 泣ける, category: mood }
+  - { match: [熱い, 熱血, 燃える, 胸熱], slug: hot-blooded, name: 熱い, category: mood }
+  - { match: [癒し, 癒される, ほっこり, 心温まる], slug: healing, name: 癒し, category: mood }
+  - { match: [ダーク, 残酷, 絶望, 狂気], slug: dark, name: ダーク, category: mood }
